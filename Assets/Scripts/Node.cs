@@ -1,30 +1,55 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Node : MonoBehaviour
 {
+    [Header("_______________________________________________________________________________________")]
+    [Header("PROPRIEDADES")]
+    [Space]
     [SerializeField] private int id;
-    [SerializeField] private bool canMove;
-    [SerializeField] private bool isExit;
     [SerializeField] private List<Node> edges = new();
 
-    public int Id
+    [Space]
+    [Header("_______________________________________________________________________________________")]
+    [Header("PORTA")]
+    [Space]
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private bool isDoor;
+    [SerializeField] private bool canMove;
+    [SerializeField] private List<Sprite> sprites;
+    [SerializeField] private float timeAnimation;
+    [SerializeField] private bool isExit;
+
+    private Action action;
+
+
+    private void Start()
     {
-        get { return id; }
-        set { id = value; }
+        if (isDoor)
+        {
+            action = gameObject.GetComponent<Action>();
+
+            if (action == null)
+            {
+                action = gameObject.AddComponent<Action>();
+                action.Sprites = sprites;
+                action.TimeAnimation = timeAnimation;
+                action.GameManager = gameManager;
+            }
+
+            gameObject.AddComponent<BoxCollider2D>();
+        }
     }
 
-    public bool CanMove
+    private void OnMouseDown()
     {
-        get { return canMove; }
-        set { canMove = value; }
-    }
-
-    public List<Node> Edges
-    {
-        get { return edges; }
-        set { edges = value; }
+        if (isDoor && action != null)
+        {
+            Debug.Log("Cliquei na porta: " +  id);
+            action.ClickDoor();
+        }
     }
 
     public void AddEdge(Node node)
@@ -93,5 +118,35 @@ public class Node : MonoBehaviour
     public bool isAdjacente(Node node)
     {
         return Edges.Contains(node) && node != this;
+    }
+
+    public int Id
+    {
+        get { return id; }
+        set { id = value; }
+    }
+
+    public bool CanMove
+    {
+        get { return canMove; }
+        set { canMove = value; }
+    }
+
+    public bool IsDoor
+    {
+        get { return isDoor; }
+        set { isDoor = value; }
+    }
+
+    public List<Node> Edges
+    {
+        get { return edges; }
+        set { edges = value; }
+    }
+
+    public Action Action
+    {
+        get { return action; }
+        set { action = value; }
     }
 }

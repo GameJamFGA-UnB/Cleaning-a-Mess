@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Character : MonoBehaviour
@@ -11,6 +12,8 @@ public class Character : MonoBehaviour
     [SerializeField] private float energy;
     [SerializeField] private Node currentNode;
     [SerializeField] private Node lastNode;
+
+    private bool stopMove = false;
 
     public Node OpenDoor
     {
@@ -42,6 +45,12 @@ public class Character : MonoBehaviour
         set { lastNode = value; }
     }
 
+    public void SetPosition(Node node)
+    {
+        transform.position = node.transform.position;
+        currentNode = node;
+    }
+
     public void MoveChar()
     {
         Node nextNode;
@@ -59,31 +68,60 @@ public class Character : MonoBehaviour
 
     public void MoveToNode(Node destinationNode)
     {
-        // Verifique se o nó de destino é válido
-        if (destinationNode == null)
-        {
-            Debug.LogError("Nó de destino inválido.");
-            return;
-        }
-
-        // Calcula a trajetória até o nó de destino (pode ser uma trajetória simples como uma linha reta)
         Vector3 destinationPosition = destinationNode.transform.position;
 
-        // Move o personagem para o nó de destino
         StartCoroutine(MoveCharacter(destinationPosition, destinationNode));
     }
 
     // Método para mover o personagem gradualmente até a posição de destino
     private IEnumerator MoveCharacter(Vector3 destination, Node destinationNode)
     {
-        while (Vector3.Distance(transform.position, destination) > 0.1f)
+        lastNode = currentNode;
+        currentNode = destinationNode;
+
+        while (Vector3.Distance(transform.position, destination) > 0.01f)
         {
             transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime);
             yield return null;
+
+            if (stopMove)
+            {
+                stopMove = false;
+                yield break;
+            }
         }
 
-        // Quando o personagem chegar ao destino, atualize o currentNode para o novo nó
-        currentNode = destinationNode;
+        MoveChar();
+    }
+
+
+    public void MoveToPath(List<Node> path)
+    {
+        stopMove = true;
+        StartCoroutine(MoveCharacter(path));
+    }
+
+    private IEnumerator MoveCharacter(List<Node> graphi)
+    {
+        foreach (Node node in graphi)
+        {
+            Vector3 destinationPosition = node.transform.position;
+
+            lastNode = currentNode;
+            currentNode = node;
+
+            while (Vector3.Distance(transform.position, destinationPosition) > 0.01f)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, destinationPosition, speed * Time.deltaTime);
+                yield return null;
+
+                if (stopMove)
+                {
+                    stopMove = false;
+                    yield break;
+                }
+            }
+        }
 
         MoveChar();
     }

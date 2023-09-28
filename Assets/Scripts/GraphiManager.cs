@@ -39,6 +39,11 @@ public class GraphiManager : MonoBehaviour
     {
         foreach (Node node in nodes)
         {
+            if (node.IsDoor)
+                node.CanMove = false;
+            else
+                node.CanMove = true;
+
             int currentNodeId = node.Id;
 
             foreach (Node adjNode in node.Edges)
@@ -75,9 +80,12 @@ public class GraphiManager : MonoBehaviour
 
         Vector3 direction = (endNode - startNode).normalized;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        
-        edge.transform.SetPositionAndRotation(new Vector3(edge.transform.position.x,
-            edge.transform.position.y,
-            -0.1f), Quaternion.Euler(0f, 0f, angle));
+        edge.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+    }
+
+    public List<Node> Nodes
+    {
+        get { return nodes; }
+        set { nodes = value; }
     }
 }
