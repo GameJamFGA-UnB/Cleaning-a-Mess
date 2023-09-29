@@ -1,12 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Character : MonoBehaviour
 {
+    [SerializeField] private GameManager gameManager;
     [SerializeField] private float speed;
     [SerializeField] private Node currentNode;
     [SerializeField] private Node lastNode;
@@ -60,6 +59,9 @@ public class Character : MonoBehaviour
         animations.LoadNewMove(lastNode.transform.position, currentNode.transform.position);
         isMoving = true;
 
+        if (destinationNode.IsExit)
+            gameManager.Win();
+
         while (Vector3.Distance(transform.position, destination) > 0.01f)
         {
             
@@ -111,6 +113,10 @@ public class Character : MonoBehaviour
         isMoving = true;
         foreach (Node node in graphi)
         {
+
+            if (node.IsExit)
+                gameManager.Win();
+                
             Vector3 destinationPosition = node.transform.position;
 
             lastNode = currentNode;
@@ -174,5 +180,11 @@ public class Character : MonoBehaviour
     {
         get { return moveCharAgain; }
         set { moveCharAgain = value; }
+    }
+
+    public GameManager GameManager
+    {
+        get { return gameManager; }
+        set { gameManager = value; }
     }
 }

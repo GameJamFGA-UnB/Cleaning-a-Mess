@@ -16,10 +16,7 @@ public class Animations : MonoBehaviour
     [SerializeField] private List<Sprite> spritesBrokenRight;
 
     private SpriteRenderer spriteRenderer;
-    private bool changeMove = false;
-    private bool isAnimation = false;
     private int direction = -1; // 0 = stoped | 1 = top | 2 = botton | 3 = right | 4 = left
-    private bool waiting = false;
 
     private void Start()
     {
@@ -49,7 +46,7 @@ public class Animations : MonoBehaviour
                 if (direction != 3)
                     direction = 3;
                 else return;
-                changeMove = true;
+
                 type = 3;
                 spritesToUse = spritesSideRight;
             }
@@ -58,8 +55,8 @@ public class Animations : MonoBehaviour
                 if (direction != 4)
                     direction = 4;
                 else return;
+
                 type = 4;
-                changeMove = true;
                 spritesToUse = spritesSideRight;
                 spriteRenderer.flipX = true;
             }
@@ -73,7 +70,6 @@ public class Animations : MonoBehaviour
                 else return;
 
                 type = 1;
-                changeMove = true;
                 spritesToUse = spritesTop;
             }
             else
@@ -83,12 +79,11 @@ public class Animations : MonoBehaviour
                 else return;
 
                 type = 2;
-                changeMove = true;
                 spritesToUse = spritesBotton;
             }
         }
 
-        StartCoroutine(WaitToChangeAnimation(spritesToUse, type));
+        StartCoroutine(StartAnimationLoop(spritesToUse, type));
     }
 
     public void LoadNewMove()
@@ -97,11 +92,8 @@ public class Animations : MonoBehaviour
             direction = 0;
         else return;
 
-        changeMove = true;
-
         List<Sprite> spritesToUse = spritesStoped;
-        if (!waiting)
-            StartCoroutine(WaitToChangeAnimation(spritesToUse, 0));
+        StartCoroutine(StartAnimationLoop(spritesToUse, 0));
     }
 
     public void LoadNewBroken()
@@ -123,41 +115,24 @@ public class Animations : MonoBehaviour
         else
             spritesToUse = spritesBrokenBotton;
 
-        StartCoroutine(WaitToChangeAnimation(spritesToUse, 0));
-    }
-
-    IEnumerator WaitToChangeAnimation(List<Sprite> spritesToUse, int type)
-    {
-        while(changeMove && isAnimation)
-        {
-            yield return null;
-        }
-
-        StartCoroutine(StartAnimationLoop(spritesToUse, type));
+        StartCoroutine(StartAnimationLoop(spritesToUse, 0));
     }
 
 
     IEnumerator StartAnimationLoop(List<Sprite> sprites, int type)
     {
-        if (changeMove)    
-            changeMove = false;
-
-        isAnimation = true;
         while (true)
         {
             foreach (Sprite sprite in sprites)
             {
-                
                 spriteRenderer.sprite = sprite;
 
                 float currentTime = 0;
 
                 while (currentTime < timeAnimation)
                 {
-                    if (changeMove || type != direction)
+                    if (type != direction)
                     {
-                        isAnimation = false;
-                        changeMove = false;
                         yield break;
                     }
                     currentTime += 0.1f;

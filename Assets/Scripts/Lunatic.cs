@@ -11,6 +11,7 @@ public class Lunatic : MonoBehaviour
     [SerializeField] private Animations animations;
     [SerializeField] private float timeAnimationBroken;
     [SerializeField] private int hitNumber;
+    [SerializeField] private AudioClip slammingDoor;
 
 
     public void StartMoveLunatic()
@@ -91,7 +92,7 @@ public class Lunatic : MonoBehaviour
         for (int i = 0; i < hitNumber; i++)
         {
             animations.LoadNewBroken();
-
+            gameManager.EffectsAudioSlamming.Play();
             yield return new WaitForSeconds(timeAnimationBroken);
         }
 
@@ -103,8 +104,7 @@ public class Lunatic : MonoBehaviour
     {
         if (collision.gameObject.GetComponent<Character>())
         {
-            Destroy(collision.gameObject);
-            Destroy(gameObject);
+            gameManager.Lose();
         }
     }
 

@@ -22,6 +22,7 @@ public class Node : MonoBehaviour
     [SerializeField] private List<Sprite> sprites;
     [SerializeField] private float timeAnimation;
     [SerializeField] private bool isExit;
+    [SerializeField] private bool isFakeDoor;
 
     private Action action;
 
@@ -59,8 +60,10 @@ public class Node : MonoBehaviour
     {
         if (isDoor && action != null)
         {
-            Debug.Log("Cliquei na porta: " +  id);
-            action.ClickDoor();
+            if (!isFakeDoor)
+                action.ClickDoor();
+            else
+                gameManager.EffectsAudioFakeDoor.Play();
         }
     }
 
@@ -133,6 +136,7 @@ public class Node : MonoBehaviour
         isDoor = false;
         GetComponent<BoxCollider2D>().enabled = false;
         transform.GetChild(0).gameObject.SetActive(false);
+        gameManager.EffectsAudioBroken.Play();
     }
 
     public bool isAdjacente(Node node)
@@ -144,6 +148,12 @@ public class Node : MonoBehaviour
     {
         get { return id; }
         set { id = value; }
+    }
+
+    public GameManager GameManager
+    {
+        get { return gameManager; }
+        set { gameManager = value; }
     }
 
     public bool CanMove
@@ -174,5 +184,11 @@ public class Node : MonoBehaviour
     {
         get { return isLunatic; }
         set { isLunatic = value; }
+    }
+
+    public bool IsExit
+    {
+        get { return isExit; }
+        set { isExit = value; }
     }
 }

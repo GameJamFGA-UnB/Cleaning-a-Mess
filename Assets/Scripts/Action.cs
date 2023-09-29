@@ -39,13 +39,11 @@ public class Action : MonoBehaviour
         if (StateManager.IsMoving) return;
         StateManager.IsMoving = true;
 
-        Debug.Log("Ultima porta aberta: " + gameManager.OpenedDoor);
         Node openedDoor = gameManager.OpenedDoor;
         Node thisNode = GetComponent<Node>();
 
         if (openedDoor != null && thisNode != openedDoor)
         {
-            Debug.Log("Vou fechar a ultima porta primeiro..");
             openedDoor.CanMove = false;
             openedDoor.Action.ForceCloseDoor(this);
             return;
@@ -53,7 +51,6 @@ public class Action : MonoBehaviour
 
         if (isOpen)
         {
-            Debug.Log("Estou fehchando a porta que o player pediu..");
             StartCoroutine(StartAnimationClose());
             isOpen = false;
             thisNode.CanMove = false;
@@ -71,7 +68,6 @@ public class Action : MonoBehaviour
         }
         else
         {
-            Debug.Log("Estou abrindo a porta que o player pediu..");
             StartCoroutine(StartAnimationOpen());
             isOpen = true;
             thisNode.CanMove = true;
@@ -116,7 +112,7 @@ public class Action : MonoBehaviour
 
     IEnumerator StartAnimationClose()
     {
-        Debug.Log("Fechando a porta: " + gameObject.name);
+        gameManager.EffectsAudioCloseDoor.Play();
         for (int i = sprites.Count - 1; i >= 0; i--)
         {
             spriteRenderer.sprite = sprites[i];
@@ -128,6 +124,7 @@ public class Action : MonoBehaviour
 
     IEnumerator StartAnimationOpen()
     {
+        gameManager.EffectsAudioOpenDoor.Play();
         foreach (Sprite sprite in sprites)
         {
             spriteRenderer.sprite = sprite;

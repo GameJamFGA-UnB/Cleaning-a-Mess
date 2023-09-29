@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class GraphiManager : MonoBehaviour
 {
+    [SerializeField] private GameManager gameManager;
     [SerializeField] private GameObject edgePrefab;
     [SerializeField] private Transform edgeParent;
     [SerializeField] private List<Node> nodes;
@@ -14,7 +14,7 @@ public class GraphiManager : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    public void LoadNodes()
     {
         nodes ??= new List<Node>();
 
@@ -40,6 +40,8 @@ public class GraphiManager : MonoBehaviour
     {
         foreach (Node node in nodes)
         {
+            node.GameManager = gameManager;
+
             if (node.IsDoor)
                 node.CanMove = false;
             else
