@@ -10,6 +10,7 @@ public class GraphiManager : MonoBehaviour
     [SerializeField] private List<Node> nodes;
     [SerializeField] private int[][] matrixAdj;
     [SerializeField] private float edgeHeight;
+    [SerializeField] private bool createEdges;
 
 
     // Start is called before the first frame update
@@ -59,7 +60,8 @@ public class GraphiManager : MonoBehaviour
 
                 if (matrixAdj[adjNodeId][currentNodeId] != 1)
                 {
-                    CreateEdge(node.transform.position, adjNode.transform.position);
+                    if (createEdges)
+                        CreateEdge(node.transform.position, adjNode.transform.position);
                 }
             }
         }

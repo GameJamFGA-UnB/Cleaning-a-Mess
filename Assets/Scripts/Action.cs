@@ -9,17 +9,29 @@ public class Action : MonoBehaviour
     [SerializeField] private float timeAnimation;
     [SerializeField] private bool isLoop;
     [SerializeField] private GameManager gameManager;
-
-    private Image image;
-    private bool isOpen;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private bool isOpen;
 
 
     private void Start()
     {
-        image = gameObject.GetComponent<Image>();
-
         if (IsLoop)
             StartCoroutine(StartAnimationLoop());
+    }
+
+    public void ForceCloseDoor(Action _action)
+    {
+        isOpen = false;
+        StartCoroutine(CloseDoor(_action));
+    }
+
+    IEnumerator CloseDoor(Action _action)
+    {
+        yield return StartCoroutine(StartAnimationClose());
+
+        gameManager.OpenedDoor = null;
+
+        _action.ClickDoor();
     }
 
     public void ClickDoor()
@@ -27,10 +39,30 @@ public class Action : MonoBehaviour
         if (StateManager.IsMoving) return;
         StateManager.IsMoving = true;
 
+        Debug.Log("Ultima porta aberta: " + gameManager.OpenedDoor);
+        Node openedDoor = gameManager.OpenedDoor;
+        Node thisNode = GetComponent<Node>();
+
+        if (openedDoor != null && thisNode != openedDoor)
+        {
+            Debug.Log("Vou fechar a ultima porta primeiro..");
+            openedDoor.CanMove = false;
+            openedDoor.Action.ForceCloseDoor(this);
+            return;
+        }
+
         if (isOpen)
         {
+            Debug.Log("Estou fehchando a porta que o player pediu..");
             StartCoroutine(StartAnimationClose());
             isOpen = false;
+            thisNode.CanMove = false;
+
+            if (gameManager.Character.NextNode == thisNode)
+            {
+                gameManager.Character.StopMove = true;
+                gameManager.Character.MoveCharAgain = true;
+            }
 
             // verifico se o currentNode tem essa porta como No adjascente
             // se tiver eu chamo um funcao do char que verifica se o nextNode eh 
@@ -39,10 +71,12 @@ public class Action : MonoBehaviour
         }
         else
         {
+            Debug.Log("Estou abrindo a porta que o player pediu..");
             StartCoroutine(StartAnimationOpen());
             isOpen = true;
-
-            Node thisNode = GetComponent<Node>();
+            thisNode.CanMove = true;
+            gameManager.OpenedDoor = thisNode;
+            
 
             Node lastNode = gameManager.Character.LastNode;
             Node currentNode = gameManager.Character.CurrentNode;
@@ -54,9 +88,12 @@ public class Action : MonoBehaviour
 
             if (pathLast != null && pathCurrent != null)
             {
-                List<Node> shortestPath = pathLast.Count < pathCurrent.Count ? pathLast : pathCurrent;
-                thisNode.CanMove = true;
+                List<Node> shortestPath = pathLast.Count <= pathCurrent.Count ? pathLast : pathCurrent;
                 gameManager.Character.MoveToPath(shortestPath);
+            }
+            else
+            {
+                gameManager.Character.MoveChar();
             }
 
 
@@ -71,7 +108,7 @@ public class Action : MonoBehaviour
         {
             foreach (Sprite sprite in sprites)
             {
-                image.sprite = sprite;
+                spriteRenderer.sprite = sprite;
                 yield return new WaitForSeconds(timeAnimation);
             }
         }
@@ -79,9 +116,10 @@ public class Action : MonoBehaviour
 
     IEnumerator StartAnimationClose()
     {
+        Debug.Log("Fechando a porta: " + gameObject.name);
         for (int i = sprites.Count - 1; i >= 0; i--)
         {
-            image.sprite = sprites[i];
+            spriteRenderer.sprite = sprites[i];
             yield return new WaitForSeconds(timeAnimation);
         }
 
@@ -92,11 +130,17 @@ public class Action : MonoBehaviour
     {
         foreach (Sprite sprite in sprites)
         {
-            image.sprite = sprite;
+            spriteRenderer.sprite = sprite;
             yield return new WaitForSeconds(timeAnimation);
         }
 
         StateManager.IsMoving = false;
+    }
+
+    public SpriteRenderer SpriteRender
+    {
+        get { return spriteRenderer; }
+        set { spriteRenderer = value; }
     }
 
     public List<Sprite> Sprites

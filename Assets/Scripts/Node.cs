@@ -10,6 +10,7 @@ public class Node : MonoBehaviour
     [Space]
     [SerializeField] private int id;
     [SerializeField] private List<Node> edges = new();
+    [SerializeField] private bool isLunatic;
 
     [Space]
     [Header("_______________________________________________________________________________________")]
@@ -39,8 +40,19 @@ public class Node : MonoBehaviour
                 action.GameManager = gameManager;
             }
 
-            gameObject.AddComponent<BoxCollider2D>();
+            try
+            {
+                action.SpriteRender = transform.GetChild(0).GetComponent<SpriteRenderer>();
+            }
+            catch
+            {
+                Debug.LogError("Esqueceu da porta: " + gameObject.name);
+            }
+
+            BoxCollider2D boxCollider = gameObject.AddComponent<BoxCollider2D>();
+            boxCollider.isTrigger = true;
         }
+            GetComponent<SpriteRenderer>().color = new Color(0, 0, 0, 0);
     }
 
     private void OnMouseDown()
@@ -96,7 +108,7 @@ public class Node : MonoBehaviour
             if (edge.isExit)
                 return edge;
 
-            if (edge.CanMove && edge != lastNode)
+            if (edge.CanMove && edge != lastNode && !edge.IsLunatic)
             {
                 validEdges.Add(edge);
             }
@@ -113,6 +125,14 @@ public class Node : MonoBehaviour
             int randomIndex = Random.Range(0, validEdges.Count);
             return validEdges[randomIndex];
         }
+    }
+
+    public void DisableDoor()
+    {
+        canMove = true;
+        isDoor = false;
+        GetComponent<BoxCollider2D>().enabled = false;
+        transform.GetChild(0).gameObject.SetActive(false);
     }
 
     public bool isAdjacente(Node node)
@@ -148,5 +168,11 @@ public class Node : MonoBehaviour
     {
         get { return action; }
         set { action = value; }
+    }
+
+    public bool IsLunatic
+    {
+        get { return isLunatic; }
+        set { isLunatic = value; }
     }
 }
