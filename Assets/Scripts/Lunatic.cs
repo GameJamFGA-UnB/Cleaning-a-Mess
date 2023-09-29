@@ -90,7 +90,7 @@ public class Lunatic : MonoBehaviour
     {
         for (int i = 0; i < hitNumber; i++)
         {
-            animations.LoadNewMove();
+            animations.LoadNewBroken();
 
             yield return new WaitForSeconds(timeAnimationBroken);
         }
@@ -106,5 +106,11 @@ public class Lunatic : MonoBehaviour
             Destroy(collision.gameObject);
             Destroy(gameObject);
         }
+    }
+
+    public GameManager GameManager 
+    { 
+        get { return gameManager; }
+        set { gameManager = value; } 
     }
 }

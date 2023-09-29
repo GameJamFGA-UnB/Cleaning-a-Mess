@@ -26,6 +26,11 @@ public class Animations : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
     public void LoadNewMove(Vector3 startPosition, Vector3 endPosition)
     {
         List<Sprite> spritesToUse;
@@ -123,7 +128,6 @@ public class Animations : MonoBehaviour
 
     IEnumerator WaitToChangeAnimation(List<Sprite> spritesToUse, int type)
     {
-        //Debug.Log("Estou esperando pela animcao...");
         while(changeMove && isAnimation)
         {
             yield return null;

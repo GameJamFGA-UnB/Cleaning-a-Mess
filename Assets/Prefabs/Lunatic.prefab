@@ -135,6 +135,15 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 888288c716b101949b6846c922a310c6, type: 3}
   - {fileID: 21300000, guid: aedfb6dd65248d94ca20bdfdbe9345a7, type: 3}
   timeAnimation: 0.2
+  spritesBrokenTop:
+  - {fileID: 21300000, guid: 04c052b5a98bd8145b9f74df8430c922, type: 3}
+  - {fileID: 21300000, guid: 9b487b3e84328da4b85c2ec69c18e647, type: 3}
+  spritesBrokenBotton:
+  - {fileID: 21300000, guid: 9f5a4b72822853b4ea340ff510efa194, type: 3}
+  - {fileID: 21300000, guid: f857eee0da1536c438c0d2dce74ef123, type: 3}
+  spritesBrokenRight:
+  - {fileID: 21300000, guid: 461bafb5501e15d44a23742a8012c44b, type: 3}
+  - {fileID: 21300000, guid: 4f845e24b0c48d744b9895035531564b, type: 3}
 --- !u!61 &4018482644331618499
 BoxCollider2D:
   m_ObjectHideFlags: 0

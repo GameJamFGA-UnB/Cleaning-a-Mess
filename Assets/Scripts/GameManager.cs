@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
         GameObject _lunatic = Instantiate(prefabLunatic, parentChars);
         _lunatic.transform.position = spawPositionLunatic;
         lunatic = _lunatic.GetComponent<Lunatic>();
+        lunatic.GameManager = this;
 
         character.SetPosition(mapManagers[currentMap].StartNode);
         character.MoveChar();
